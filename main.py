@@ -8,7 +8,7 @@ Created on Thu May  9 15:23:03 2019
 
 from engine import Igra
 
-igra = Igra()
+igra = Igra(n = 3, d = 2)
 
 igra.dodajIgrace()
 

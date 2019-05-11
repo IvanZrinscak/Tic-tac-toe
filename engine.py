@@ -168,8 +168,8 @@ class Igra(object):
                     if Nastavi2:
                         print("gotovo, pobjednik je:", self.__igraci[(self.__trenutni + 1) % 2].ime)
                         return True
-                        
-            if min(self.__tabla) == 0:
+
+            if self.__tabla.min() == 0:
                 print("Gotovo je, nema pobjednika!")
                 return True
 
