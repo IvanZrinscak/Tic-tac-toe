@@ -4,7 +4,7 @@ import numpy as np
 class Igra(object):
     class Igrac(object):
 
-        def __init__(self, broj: int, ime=None, *args, **kwargs):
+        def __init__(self, broj: int, ime=None):
             if not isinstance(broj, int):
                 raise TypeError("broj mora biti objekt klase `int'.")
 
@@ -23,14 +23,14 @@ class Igra(object):
                 print("ponovi: ")
             potez = []
             for i in range(n):
-                potez.append(int(input("Koordinata: ")))
+                potez.append(int(input("Koodrinata br. " + str(i+1) + " : ")) - 1)
             return tuple(potez)
 
     def __new__(cls, *args, **kwargs):
         return super(Igra, cls).__new__(cls)
 
 
-    def __init__(self, n=5, d=5):
+    def __init__(self, n=4, d=3):
         size = [n for i in range(d)]
         self.__tabla = np.ndarray(size, np.int8)
         self.__tabla.fill(-1)
