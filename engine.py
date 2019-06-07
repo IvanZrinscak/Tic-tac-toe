@@ -23,7 +23,7 @@ class Igra(object):
                 print("ponovi: ")
             potez = []
             for i in range(n):
-                potez.append(int(input("Koodrinata br. " + str(i+1) + " : ")) - 1)
+                potez.append(int(input("Koodrinata br. " + str(i+1) + " : ")))
             return tuple(potez)
 
     def __new__(cls, *args, **kwargs):
