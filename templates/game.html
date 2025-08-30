@@ -1,0 +1,65 @@
+<!doctype html>
+<title>Tic Tac Toe</title>
+<h1>Tic Tac Toe - {{ dimension }}D</h1>
+{% if winner is not none %}
+  {% if winner == -1 %}
+    <p>Draw!</p>
+  {% else %}
+    <p>Winner: {{ 'OX'[winner] }}</p>
+  {% endif %}
+  <form method="post" action="{{ url_for('reset') }}">
+    <button type="submit">Play again</button>
+  </form>
+{% endif %}
+
+{% if dimension == 2 %}
+<table style="border-collapse: collapse;">
+  {% for i in range(size) %}
+  <tr>
+    {% for j in range(size) %}
+    <td style="width:40px;height:40px;text-align:center;border:1px solid #000;">
+      {% if board[i][j] == -1 and winner is none %}
+      <form method="post" action="{{ url_for('move') }}">
+        <input type="hidden" name="row" value="{{ i }}">
+        <input type="hidden" name="col" value="{{ j }}">
+        <button style="width:40px;height:40px;"></button>
+      </form>
+      {% elif board[i][j] == 0 %}
+      O
+      {% elif board[i][j] == 1 %}
+      X
+      {% endif %}
+    </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+{% elif dimension == 3 %}
+  {% for k in range(size) %}
+  <h2>Layer {{ k }}</h2>
+  <table style="border-collapse: collapse;">
+    {% for i in range(size) %}
+    <tr>
+      {% for j in range(size) %}
+      <td style="width:40px;height:40px;text-align:center;border:1px solid #000;">
+        {% if board[i][j][k] == -1 and winner is none %}
+        <form method="post" action="{{ url_for('move') }}">
+          <input type="hidden" name="row" value="{{ i }}">
+          <input type="hidden" name="col" value="{{ j }}">
+          <input type="hidden" name="layer" value="{{ k }}">
+          <button style="width:40px;height:40px;"></button>
+        </form>
+        {% elif board[i][j][k] == 0 %}
+        O
+        {% elif board[i][j][k] == 1 %}
+        X
+        {% endif %}
+      </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+  {% endfor %}
+{% endif %}
+
+<p><a href="{{ url_for('index') }}">Choose dimension</a></p>
