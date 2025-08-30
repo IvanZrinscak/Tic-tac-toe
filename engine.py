@@ -41,6 +41,7 @@ class Igra(object):
         self.__n = n
         self.__d = d
         self.__zadnji = tuple()
+        self.__winner = None
 
 
     def dohvatiTablu(self):
@@ -50,6 +51,117 @@ class Igra(object):
         self.__igraci.append(Igra.Igrac(0, "Ivan"))
         self.__igraci.append(Igra.Igrac(1, "Davor"))
         return
+
+    # --- New public API for programmatic play ---
+    def make_move(self, coords):
+        """Place a move for the current player.
+
+        Parameters
+        ----------
+        coords : tuple
+            Coordinates of the move. Length must match game dimension ``d``.
+
+        Returns
+        -------
+        bool
+            ``True`` if the move ends the game, ``False`` otherwise.
+        """
+        if self.__zavrsena:
+            return True
+
+        if len(coords) != self.__d:
+            raise ValueError("invalid number of coordinates")
+
+        if self.__tabla[coords] != -1:
+            raise ValueError("polje je već zauzeto")
+
+        self.__tabla[coords] = self.__trenutni
+        self.__zadnji = tuple(coords)
+        self.__trenutni = (self.__trenutni + 1) % 2
+
+        if self._game_over():
+            self.__zavrsena = True
+            self.__winner = (self.__trenutni + 1) % 2
+            return True
+
+        if (self.__tabla == -1).sum() == 0:
+            self.__zavrsena = True
+            self.__winner = -1
+            return True
+
+        return False
+
+    def get_winner(self):
+        """Return the index of the winner (0 or 1) or -1 for a draw."""
+        return self.__winner
+
+    # --- Helpers ---
+    def _binomial(self, n, k):
+        if k == 1:
+            return [[i] for i in range(n)]
+        elif n == 0:
+            return []
+        else:
+            L = [x + [n - 1] for x in self._binomial(n - 1, k - 1)]
+        return self._binomial(n - 1, k) + L[::-1]
+
+    def _game_over(self):
+        if self.__zadnji == tuple():
+            return False
+        for dim in range(1, self.__d + 1):
+            for podskup in self._binomial(self.__d, dim):
+                k = podskup[0]
+                p = list(self.__zadnji)
+                q = list(self.__zadnji)
+                dalje = False
+                podskup1 = []
+                podskup2 = []
+                for i in podskup:
+                    if self.__zadnji[k] == self.__zadnji[i]:
+                        podskup1.append(i)
+                    elif self.__zadnji[k] == self.__n - 1 - self.__zadnji[i]:
+                        podskup2.append(i)
+                    else:
+                        dalje = True
+                        break
+                if dalje:
+                    continue
+
+                nastavi1 = nastavi2 = True
+                while nastavi1:
+                    if self.__tabla[tuple(p)] != self.__tabla[self.__zadnji]:
+                        nastavi2 = False
+                        break
+                    for i in podskup1:
+                        if p[i] == self.__n - 1:
+                            nastavi1 = False
+                        else:
+                            p[i] += 1
+                    for i in podskup2:
+                        if p[i] == 0:
+                            nastavi1 = False
+                        else:
+                            p[i] -= 1
+
+                nastavi1 = True
+                while nastavi1:
+                    if self.__tabla[tuple(q)] != self.__tabla[self.__zadnji]:
+                        nastavi2 = False
+                    for i in podskup1:
+                        if q[i] == 0:
+                            nastavi1 = False
+                        else:
+                            q[i] -= 1
+                    for i in podskup2:
+                        if q[i] == self.__n - 1:
+                            nastavi1 = False
+                        else:
+                            q[i] += 1
+
+                if nastavi2:
+                    return True
+
+        return False
 
 
     def igraj(self):
