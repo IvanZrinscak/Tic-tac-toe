@@ -35,7 +35,7 @@
   {% endfor %}
 </table>
 {% elif dimension == 3 %}
-<div class="scene" style="width:{{ size * 50 }}px;height:{{ size * 50 }}px;">
+<div class="scene" id="scene" style="width:{{ size * 50 }}px;height:{{ size * 50 }}px;">
   <div id="cube" class="board-3d" style="width:{{ size * 50 }}px;height:{{ size * 50 }}px;">
     {% for i in range(size) %}
       {% for j in range(size) %}
@@ -48,16 +48,16 @@
               <input type="hidden" name="layer" value="{{ k }}">
               <button style="width:40px;height:40px;"></button>
             </form>
-            {% elif board[i][j][k] == 0 %}O{% elif board[i][j][k] == 1 %}X{% endif %}
+            {% elif board[i][j][k] == 0 %}
+            <div class="marker o"></div>
+            {% elif board[i][j][k] == 1 %}
+            <div class="marker x"></div>
+            {% endif %}
           </div>
         {% endfor %}
       {% endfor %}
     {% endfor %}
   </div>
-</div>
-<div class="controls">
-  <label>Rotate X: <input type="range" id="rotX" min="-180" max="180" value="-20"></label>
-  <label>Rotate Y: <input type="range" id="rotY" min="-180" max="180" value="30"></label>
 </div>
 <style>
   .scene { perspective: 600px; margin:20px auto; }
@@ -66,21 +66,71 @@
     position:absolute;
     width:40px;
     height:40px;
-    border:1px solid #000;
-    text-align:center;
-    line-height:40px;
-    background:#fff;
+    border:1px solid rgba(0,0,0,0.3);
+    background:rgba(255,255,255,0.05);
+    transform-style: preserve-3d;
   }
+  .marker {
+    position:absolute;
+    width:40px;
+    height:40px;
+    left:0;
+    top:0;
+    transform-style:preserve-3d;
+  }
+  .marker.o::before,
+  .marker.o::after {
+    content:"";
+    position:absolute;
+    width:30px;
+    height:30px;
+    left:5px;
+    top:5px;
+    border:5px solid blue;
+    border-radius:50%;
+  }
+  .marker.o::before { transform:translateZ(-2px); }
+  .marker.o::after { transform:translateZ(2px); }
+  .marker.x::before,
+  .marker.x::after {
+    content:"";
+    position:absolute;
+    width:5px;
+    height:40px;
+    left:17.5px;
+    top:0;
+    background:red;
+  }
+  .marker.x::before { transform:translateZ(-2px) rotateZ(45deg); }
+  .marker.x::after { transform:translateZ(2px) rotateZ(-45deg); }
 </style>
 <script>
 const cube = document.getElementById('cube');
-const rotX = document.getElementById('rotX');
-const rotY = document.getElementById('rotY');
+const scene = document.getElementById('scene');
+let rotX = -20;
+let rotY = 30;
+let dragging = false;
+let lastX = 0;
+let lastY = 0;
 function update(){
-  cube.style.transform = `rotateX(${rotX.value}deg) rotateY(${rotY.value}deg)`;
+  cube.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
 }
-rotX.addEventListener('input', update);
-rotY.addEventListener('input', update);
+scene.addEventListener('mousedown', e => {
+  dragging = true;
+  lastX = e.clientX;
+  lastY = e.clientY;
+});
+document.addEventListener('mousemove', e => {
+  if(!dragging) return;
+  const dx = e.clientX - lastX;
+  const dy = e.clientY - lastY;
+  rotY += dx * 0.5;
+  rotX -= dy * 0.5;
+  lastX = e.clientX;
+  lastY = e.clientY;
+  update();
+});
+document.addEventListener('mouseup', () => { dragging = false; });
 update();
 </script>
 {% endif %}
