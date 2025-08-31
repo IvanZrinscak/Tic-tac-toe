@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 game = None
 dimension = None
+board_size = 3
 
 
 @app.route("/")
@@ -15,9 +16,10 @@ def index():
 
 @app.post("/start")
 def start():
-    global game, dimension
+    global game, dimension, board_size
     dimension = int(request.form["dimension"])
-    game = Igra(n=3, d=dimension)
+    board_size = int(request.form.get("size", 3))
+    game = Igra(n=board_size, d=dimension)
     game.dodajIgrace()
     return redirect(url_for("play"))
 
@@ -29,7 +31,8 @@ def play():
     board = game.dohvatiTablu()
     winner = game.get_winner()
     size = board.shape[0]
-    return render_template("game.html", board=board, size=size, winner=winner, dimension=dimension)
+    cube_size = size * 50
+    return render_template("game.html", board=board, size=size, cube_size=cube_size, half=cube_size/2, winner=winner, dimension=dimension)
 
 
 @app.post("/move")
@@ -55,7 +58,7 @@ def reset():
     global game
     if dimension is None:
         return redirect(url_for("index"))
-    game = Igra(n=3, d=dimension)
+    game = Igra(n=board_size, d=dimension)
     game.dodajIgrace()
     return redirect(url_for("play"))
 

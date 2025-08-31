@@ -2,6 +2,7 @@
 <title>Start Tic Tac Toe</title>
 <h1>Select Game Dimension</h1>
 <form method="post" action="{{ url_for('start') }}">
+  <label>Board size: <input type="number" name="size" value="3" min="1"></label><br>
   <label><input type="radio" name="dimension" value="2" checked> 2D</label><br>
   <label><input type="radio" name="dimension" value="3"> 3D</label><br>
   <button type="submit">Start Game</button>

@@ -35,12 +35,28 @@
   {% endfor %}
 </table>
 {% elif dimension == 3 %}
-<div class="scene" id="scene" style="width:{{ size * 50 }}px;height:{{ size * 50 }}px;">
-  <div id="cube" class="board-3d" style="width:{{ size * 50 }}px;height:{{ size * 50 }}px;">
+<div class="scene" id="scene" style="width:{{ cube_size }}px;height:{{ cube_size }}px;">
+  <div id="cube" class="board-3d" style="width:{{ cube_size }}px;height:{{ cube_size }}px;">
+    <div class="cube-frame">
+      <div class="face front" style="transform:translateZ({{ half }}px);"></div>
+      <div class="face back" style="transform:rotateY(180deg) translateZ({{ half }}px);"></div>
+      <div class="face right" style="transform:rotateY(90deg) translateZ({{ half }}px);"></div>
+      <div class="face left" style="transform:rotateY(-90deg) translateZ({{ half }}px);"></div>
+      <div class="face top" style="transform:rotateX(90deg) translateZ({{ half }}px);"></div>
+      <div class="face bottom" style="transform:rotateX(-90deg) translateZ({{ half }}px);"></div>
+    </div>
     {% for i in range(size) %}
       {% for j in range(size) %}
         {% for k in range(size) %}
           <div class="cell" style="transform: translate3d({{ j*50 }}px, {{ i*50 }}px, {{ k*50 }}px);">
+            <div class="cube-box">
+              <div class="face front"></div>
+              <div class="face back"></div>
+              <div class="face right"></div>
+              <div class="face left"></div>
+              <div class="face top"></div>
+              <div class="face bottom"></div>
+            </div>
             {% if board[i][j][k] == -1 and winner is none %}
             <form method="post" action="{{ url_for('move') }}">
               <input type="hidden" name="row" value="{{ i }}">
@@ -62,12 +78,31 @@
 <style>
   .scene { perspective: 600px; margin:20px auto; }
   .board-3d { position: relative; transform-style: preserve-3d; margin:auto; }
+  .cube-frame, .cube-box {
+    position:absolute;
+    width:100%;
+    height:100%;
+    transform-style: preserve-3d;
+    pointer-events:none;
+  }
+  .cube-box { width:40px; height:40px; }
+  .cube-frame .face, .cube-box .face {
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(0,0,0,0.3);
+  }
+  .cube-box .front { transform: translateZ(20px); }
+  .cube-box .back { transform: rotateY(180deg) translateZ(20px); }
+  .cube-box .right { transform: rotateY(90deg) translateZ(20px); }
+  .cube-box .left { transform: rotateY(-90deg) translateZ(20px); }
+  .cube-box .top { transform: rotateX(90deg) translateZ(20px); }
+  .cube-box .bottom { transform: rotateX(-90deg) translateZ(20px); }
   .cell {
     position:absolute;
     width:40px;
     height:40px;
-    border:1px solid rgba(0,0,0,0.3);
-    background:rgba(255,255,255,0.05);
     transform-style: preserve-3d;
   }
   .marker {
